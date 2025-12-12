@@ -17,3 +17,15 @@ class Customer_Out(BaseModel):
     class Config:
         from_attributes = True
 
+class Product_Create(BaseModel):
+    name: str
+    price: float
+
+class Product_Out(Product_Create):
+    id: int
+
+    class Config:
+        from_attributes = True
+
+    
+
