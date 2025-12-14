@@ -11,3 +11,4 @@ db_url = f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.ge
 engine = create_engine(db_url)
 
 local_session = sessionmaker(autoflush=False,bind=engine)
+

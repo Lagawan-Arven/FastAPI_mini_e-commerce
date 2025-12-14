@@ -1,8 +1,8 @@
-from fastapi import FastAPI,HTTPException,Depends,APIRouter
+from fastapi import HTTPException,Depends,APIRouter
 from sqlalchemy.orm import Session
 from ..database_model import CUSTOMER,PRODUCT
 from ..dependecies import get_session,get_current_user
-from ..models import Product_Create,Product_Out
+from ..schemas import Product_Create,Product_Out
 
 router = APIRouter()
 
@@ -17,8 +17,9 @@ def add_prodcuct(product_input: Product_Create,
     
     new_product = PRODUCT(
         name = product_input.name,
+        details = product_input.details,
+        quantity = product_input.quantity,
         price = product_input.price,
-        user_id = db_customer.id
     )
     session.add(new_product)
     session.commit()
@@ -33,7 +34,7 @@ def get_all_products(current_user = Depends(get_current_user),
     if not db_customer:
         return {"message":"Not logged in!"}
     
-    db_products = session.query(PRODUCT).filter(PRODUCT.user_id==current_user.id).all()
+    db_products = session.query(PRODUCT).all()
     if db_products == []:
         raise HTTPException(status_code=400,detail="There is no products yet")
     
