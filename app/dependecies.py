@@ -7,7 +7,7 @@ from app.database.database import local_session
 from app.database import models
 from app.auth import SECRET_KEY,ALGORITHM
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login_test")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/login_test")
 
 def get_session():
     session = local_session()

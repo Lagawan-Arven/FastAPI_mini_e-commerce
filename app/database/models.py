@@ -117,4 +117,3 @@ class Product(Base):
     product_carts = relationship("Cart_Product",back_populates="product")
     product_orders = relationship("Order_Product",back_populates="product")
 
-Base.metadata.create_all(bind=engine)

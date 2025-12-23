@@ -1,3 +1,4 @@
+from __future__ import annotations
 from pydantic import BaseModel
 from typing import Optional
 
@@ -143,6 +144,13 @@ class Base_Product_Out(Base_Product):
 
     class Config:
         from_attributes = True
+
+class User_Product_Out(Base_Product):
+    id: int
+
+    class Config:
+        from_attributes = True
+
 
 class Product_Out(BaseModel):
     id: int

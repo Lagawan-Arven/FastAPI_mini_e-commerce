@@ -10,34 +10,6 @@ from app.auth import hash_password,verify_password,create_access_token
 router = APIRouter()
 
 #===============================
-        #REGISTER AN ADMIN
-#===============================
-@router.post("/register/admin")
-def register_admin(session: Session = Depends(get_session)):
-    
-    #Checks if the customer's account already existed
-    db_user = session.query(models.User).filter(models.User.username=="admin").first()
-    if db_user:
-        raise HTTPException(status_code=400,detail="Account already exist!")
-    
-    hashed_password = hash_password("1234")
-    new_user = models.User(
-        fullname = "admin",
-        age = 0,
-        gender = "admin",
-        occupation = "admin",
-        username = "admin",
-        email = "admin",
-        password = hashed_password,
-        role = "admin"
-    )
-
-    session.add(new_user)
-    session.commit()
-    session.refresh(new_user)
-    return new_user
-
-#===============================
         #REGISTER A USER
 #===============================
 @router.post("/register",response_model=schemas.Base_User_Out)
@@ -79,7 +51,7 @@ def login_user(username:str,
         raise HTTPException(status_code=404,detail="Account not found!")
     
     if not verify_password(password,db_user.password):
-        raise HTTPException(status_code=400,detail="Incorrect password!")
+        raise HTTPException(status_code=406,detail="Incorrect password!")
     
     token = create_access_token({"id":db_user.id,"role":db_user.role})
 
@@ -94,7 +66,7 @@ def login_user(data_form: OAuth2PasswordRequestForm = Depends(),
         raise HTTPException(status_code=404,detail="Account not found!")
     
     if not verify_password(data_form.password,db_user.password):
-        raise HTTPException(status_code=400,detail="Incorrect password!")
+        raise HTTPException(status_code=406,detail="Incorrect password!")
     
     token = create_access_token({"id":db_user.id,"role":db_user.role})
 
