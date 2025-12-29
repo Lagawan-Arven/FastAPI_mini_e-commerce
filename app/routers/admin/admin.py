@@ -1,9 +1,10 @@
 from fastapi import APIRouter,HTTPException,Depends
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
-from app.dependecies import get_session,pagination_params,get_admin_access
+from app.core.dependecies import get_session,pagination_params,get_admin_access
 from app.database import models
-from app import schemas
+from app.core import schemas
 from app.operations import operations
 
 import logging
@@ -52,7 +53,7 @@ def get_user_by_id(user_id: int,
 @router.delete("/users/{user_id}")
 def delete_user(user_id: int,
                 admin_access = Depends(get_admin_access),
-                session: Session = Depends(get_session)):
+                session: Session = Depends(get_session)) -> JSONResponse:
     
     db_user = session.get(models.User,user_id)
     if not db_user:
@@ -61,8 +62,7 @@ def delete_user(user_id: int,
     session.delete(db_user)
     session.commit()
 
-    logger.info("Admin deleted a user | admin_id: %s",admin_access.id)
-
+    logger.info("Admin deleted a user |deleted user_id: %s | admin_id: %s",db_user.id,admin_access.id)
     return {"message":"User deleted successfully!"}
 
 #======================================================================
@@ -115,7 +115,7 @@ def get_product_by_id(product_id: int,
                       admin_access = Depends(get_admin_access),
                       session: Session = Depends(get_session)):
     
-    db_product = operations.get_product_by_id(product_id)
+    db_product = operations.get_product_by_id(product_id,session)
     return db_product
 
 #===============================
@@ -147,7 +147,7 @@ def update_product(product_id: int, product_updates: schemas.Product_Update,
                     admin_access = Depends(get_admin_access),
                     session: Session = Depends(get_session)):
     
-    db_product = operations.get_product_by_id(product_id)
+    db_product = operations.get_product_by_id(product_id,session)
     
     db_product.name = product_updates.name
     db_product.price = product_updates.price
@@ -168,7 +168,7 @@ def delete_product(product_id: int,
                     admin_access = Depends(get_admin_access),
                     session: Session = Depends(get_session)):
     
-    db_product = operations.get_product_by_id(product_id)
+    db_product = operations.get_product_by_id(product_id,session)
     
     session.delete(db_product)
     session.commit()

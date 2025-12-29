@@ -4,6 +4,7 @@ __pycache__/
 
 # Environment
 .env
+.env.test
 
 # VS Code
 .vscode/

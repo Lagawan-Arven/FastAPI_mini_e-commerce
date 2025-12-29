@@ -3,9 +3,9 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from app.database import models
-from app.dependecies import get_session
-from app import schemas 
-from app.auth import hash_password,verify_password,create_access_token
+from app.core.dependecies import get_session
+from app.core import schemas 
+from app.core.auth import hash_password,verify_password,create_access_token
 
 import logging
 logger = logging.getLogger(__name__)
@@ -19,30 +19,40 @@ router = APIRouter()
 def register_user(user_data: schemas.User_Create,
                   session: Session = Depends(get_session)):
     
-    #Checks if the customer's account already existed
-    db_user = session.query(models.User).filter(models.User.username==user_data.username).first()
-    if db_user:
-        raise HTTPException(status_code=400,detail="Account already exist!")
-    
-    hashed_password = hash_password(user_data.password)
-    new_user = models.User(
-        fullname = user_data.firstname.capitalize() +" "+ user_data.lastname.capitalize(),
-        age = user_data.age,
-        gender = user_data.gender.capitalize(),
-        occupation = user_data.occupation.capitalize(),
-        username = user_data.username,
-        email = user_data.email,
-        password = hashed_password
-    )
-    new_user.cart = models.Cart(user = new_user)
+    try:
+        #Checks if the customer's account already existed
+        db_user = session.query(models.User).filter(models.User.username==user_data.username).first()
+        if db_user:
+            raise HTTPException(status_code=400,detail="Account already exist!")
+        
+        hashed_password = hash_password(user_data.password)
+        new_user = models.User(
+            fullname = user_data.firstname.capitalize() +" "+ user_data.lastname.capitalize(),
+            age = user_data.age,
+            gender = user_data.gender.capitalize(),
+            occupation = user_data.occupation.capitalize(),
+            username = user_data.username,
+            email = user_data.email,
+            password = hashed_password
+        )
+        new_user.cart = models.Cart(user = new_user)
 
-    session.add(new_user)
-    session.commit()
-    session.refresh(new_user)
+        session.add(new_user)
+        session.commit()
+        session.refresh(new_user)
 
-    logger.info("User account created successfully | user_id: %s | username: %s",new_user.id,new_user.username)
+        logger.info("User account created successfully | user_id: %s | username: %s",new_user.id,new_user.username)
+        return new_user
     
-    return new_user
+    except HTTPException:
+        session.rollback()
+        logger.info("HTTPException | Account Registration Failed")
+        raise
+
+    except Exception as e:
+        session.rollback()
+        logger.info("500 Internal Server Error | Account Registration Failed")
+        raise HTTPException(status_code=500,detail="Account Registration Failed")
 
 #===============================
         #LOG IN USER

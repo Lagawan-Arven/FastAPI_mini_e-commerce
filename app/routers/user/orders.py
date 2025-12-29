@@ -1,10 +1,14 @@
+import logging
 from fastapi import HTTPException,APIRouter,Depends
 from sqlalchemy.orm import Session
 
-from app import schemas
-from app.dependecies import pagination_params,get_session,get_current_user
+from app.core import schemas
+from app.core.dependecies import pagination_params,get_session,get_current_user
 from app.database import models
 from app.operations import operations
+
+import logging
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -35,16 +39,19 @@ def add_order(order_input: schemas.Base_Order_Create,
               session: Session = Depends(get_session)):
     
     try:
-        new_order = operations.add_new_order(current_user.id,order_input)
+        new_order = operations.add_new_order(user_id=current_user.id,order_input=order_input,session=session)
 
         session.commit()
         session.refresh(new_order)
+        logger.info("Adding an order successfull")
         return new_order
     
     except HTTPException:
         session.rollback()
+        logger.info("HTTPException | Adding an order failed")
         raise
 
     except Exception as e:
         session.rollback()
+        logger.info("500 Internal Server Error | Adding an order failed")
         raise HTTPException(status_code=500,detail="Checkout failed") from e

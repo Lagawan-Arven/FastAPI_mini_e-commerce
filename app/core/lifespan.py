@@ -5,7 +5,7 @@ import logging
 
 from app.database import models
 from app.database.database import engine,local_session
-from app.auth import hash_password
+from app.core.auth import hash_password
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +53,15 @@ async def lifespan(app):
         session.close()
 
     logger.info("🚀 Application startup")
-    yield
+    if os.getenv("TESTING") == "1":
+        yield
+        return
+
+    try:
+        with engine.connect() as conn:
+            yield
+    except Exception as e:
+        raise RuntimeError("Database Connection Failed!") from e
     logger.info("🛑 Application shutdown")
 
     engine.dispose()

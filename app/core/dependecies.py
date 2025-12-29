@@ -5,7 +5,7 @@ from jose import jwt
 
 from app.database.database import local_session
 from app.database import models
-from app.auth import SECRET_KEY,ALGORITHM
+from app.core.auth import SECRET_KEY,ALGORITHM
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/login_test")
 
