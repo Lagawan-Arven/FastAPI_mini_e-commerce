@@ -17,7 +17,7 @@ async def lifespan(app):
     #===============================
         #VALIDATE ENVIRONMENT
     #===============================
-    required_env = ["DB_USER","DB_PASSWORD","DB_HOST","DB_PORT","DB_NAME","SECRET_KEY","ALGORITHM"]
+    required_env = ["DB_URL","SECRET_KEY","ALGORITHM"]
 
     for variable in required_env:
         if not os.getenv(variable):

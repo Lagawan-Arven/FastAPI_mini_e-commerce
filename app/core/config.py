@@ -4,18 +4,19 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-ENV = os.getenv("ENV", "local")
+# Use ENVIRONMENT for clarity (Render-friendly)
+ENV = os.getenv("ENVIRONMENT", "local")
 
 env_file_map = {
     "local": ".env.local",
     "docker": ".env.docker",
 }
 
-env_file = env_file_map.get(ENV, ".env")
+env_file = env_file_map.get(ENV)
 
-env_path = BASE_DIR / env_file
+# Load .env ONLY for local/docker
+if env_file:
+    env_path = BASE_DIR / env_file
+    if env_path.exists():
+        load_dotenv(env_path)
 
-if env_path.exists():
-    load_dotenv(env_path)
-else:
-    raise RuntimeError(f"Env file not found: {env_path}")

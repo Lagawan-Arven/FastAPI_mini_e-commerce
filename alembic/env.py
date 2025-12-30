@@ -6,7 +6,7 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from app.database.database import db_url
+from app.database.database import DB_URL
 
 from app.database.models import Base
 
@@ -43,7 +43,7 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = db_url
+    url = DB_URL
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -63,7 +63,7 @@ def run_migrations_online() -> None:
 
     """
     configuration = config.get_section(config.config_ini_section)
-    configuration["sqlalchemy.url"] = db_url
+    configuration["sqlalchemy.url"] = DB_URL
     connectable = engine_from_config(
         configuration,
         prefix="sqlalchemy.",
