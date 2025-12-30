@@ -3,8 +3,6 @@ from sqlalchemy import String,Integer,Column,ForeignKey,Float,UniqueConstraint,D
 from sqlalchemy.orm import relationship
 from datetime import datetime,timezone
 
-from app.database.database import engine
-
 Base = declarative_base()
 
 #============================================

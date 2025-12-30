@@ -6,6 +6,8 @@ import logging
 from app.database import models
 from app.database.database import engine,local_session
 from app.core.auth import hash_password
+from app.database.database import init_db
+from app. database.wait_for_db import wait_for_db
 
 logger = logging.getLogger(__name__)
 
@@ -22,14 +24,18 @@ async def lifespan(app):
             raise RuntimeError(f"Missing environment variable: {variable}")
         
     #===============================
-        #CHECKS DATABASE
+        #WAIT FOR DATABASE
     #===============================
-    try:
-        with engine.connect() as conn:
-            conn.execute(text("SELECT 1"))
-    except Exception as e:
-        raise RuntimeError("Database Connection Failed!") from e
-    
+    wait_for_db(engine, max_retries=10, delay_seconds=2)
+   
+   #===============================
+        #INITIALIZE DATABASE
+    #===============================
+    if os.getenv("TESTING") == "1":
+        logger.info("⚠️ Running in TESTING mode")
+    else:
+        init_db()
+
     #===============================
         #CREATE ADMIN USER
     #===============================
@@ -52,16 +58,10 @@ async def lifespan(app):
     finally:
         session.close()
 
-    logger.info("🚀 Application startup")
-    if os.getenv("TESTING") == "1":
-        yield
-        return
+    logger.info("🚀 Application startup complete")
 
-    try:
-        with engine.connect() as conn:
-            yield
-    except Exception as e:
-        raise RuntimeError("Database Connection Failed!") from e
+    yield
+    
     logger.info("🛑 Application shutdown")
 
     engine.dispose()

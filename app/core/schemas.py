@@ -29,8 +29,6 @@ class User_Update(User_Personal_Info):
 class Base_User_Out(Base_User):
     id: int
     fullname: str
-    cart: Optional[Cart_Out]
-    orders: list[Order_Out] = []
 
     class Config:
         from_attributes = True

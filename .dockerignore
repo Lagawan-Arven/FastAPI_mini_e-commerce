@@ -6,4 +6,6 @@ venv/
 .gitignore
 tests/
 *.pyc
+*.pyo
+*.pyd
 *.log
