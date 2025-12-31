@@ -7,6 +7,8 @@ from app.core.config import ENV
 import os
 
 DB_URL = os.getenv('DB_URL')
+if not DB_URL:
+    raise RuntimeError("DB_URL is not set")
 
 engine = create_engine(DB_URL)
 

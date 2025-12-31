@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-# Use ENVIRONMENT for clarity (Render-friendly)
+# Use ENVIRONMENT for clarity 
 ENV = os.getenv("ENVIRONMENT", "local")
 
 env_file_map = {

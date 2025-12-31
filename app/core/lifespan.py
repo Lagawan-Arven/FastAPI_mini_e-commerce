@@ -1,5 +1,4 @@
 from contextlib import asynccontextmanager
-from sqlalchemy import text
 import os
 import logging
 
@@ -32,8 +31,8 @@ async def lifespan(app):
         #INITIALIZE DATABASE
     #===============================
     if os.getenv("TESTING") == "1":
-        logger.info("⚠️ Running in TESTING mode")
-    else:
+        logger.info("Running in TESTING mode")
+    elif os.getenv("ENVIRONMENT") == "local" or "docker":
         init_db()
 
     #===============================
@@ -58,10 +57,10 @@ async def lifespan(app):
     finally:
         session.close()
 
-    logger.info("🚀 Application startup complete")
+    logger.info("Application startup complete")
 
     yield
     
-    logger.info("🛑 Application shutdown")
+    logger.info("Application shutdown")
 
     engine.dispose()

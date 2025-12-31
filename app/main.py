@@ -16,7 +16,7 @@ app = FastAPI(lifespan=lifespan)
 
 @app.get("/")
 def app_started():
-    return {"message":"Hello World"}
+    return {"message":"App Started"}
 
 app.include_router(login_router,prefix="/api/v1",tags=["Authentication"])
 app.include_router(users_router,prefix="/api/v1",tags=["My Account"])
